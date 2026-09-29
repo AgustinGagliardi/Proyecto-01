@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.base44
+    working_dir: /app
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+    # Compile SCSS once (surfaces build errors), then watch partials for live
+    # recompilation while serving the static site with live reload on :3000.
+    command:
+      - sh
+      - -c
+      - >
+        sass scss/main.scss css/style.css --no-source-map --style=expanded
+        && (sass --watch scss/main.scss:css/style.css --no-source-map --style=expanded &)
+        && exec live-server --port=3000 --host=0.0.0.0 --no-browser .
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s

@@ -1,0 +1,5 @@
+# Dev image for the Cristales Roca static/SCSS site.
+# Only build tooling is baked in; the source is bind-mounted at runtime.
+FROM node:22-alpine
+RUN npm install -g sass live-server
+WORKDIR /app
